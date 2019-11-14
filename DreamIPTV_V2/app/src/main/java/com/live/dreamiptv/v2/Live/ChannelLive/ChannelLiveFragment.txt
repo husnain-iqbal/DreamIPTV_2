@@ -1,0 +1,103 @@
+package com.live.dreamiptv.v2.Live.ChannelLive;
+
+import android.app.Activity;
+import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+
+import com.brightcove.player.event.EventEmitter;
+import com.brightcove.player.event.EventType;
+import com.brightcove.player.mediacontroller.BrightcoveMediaController;
+import com.brightcove.player.model.Video;
+import com.brightcove.player.view.BrightcoveExoPlayerVideoView;
+import com.live.dreamiptv.v2.Live.LiveUtils;
+import com.live.dreamiptv.v2.R;
+
+public class ChannelLiveFragment extends Fragment {
+    private Activity mActivity;
+    private int mSmallScreenVideoViewHeight;
+    private BrightcoveExoPlayerVideoView mVideoView;
+    private RelativeLayout mIpTvLogoImage;
+    private RelativeLayout mFragmentsContainer;
+    private RelativeLayout mBrightCoveVideoViewContainerFragment;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = getActivity();
+        LiveUtils.setUserPresentOnLargeScreen(false);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.video_view_brightcove_exoplayer_layout, container, false);
+        mVideoView = (BrightcoveExoPlayerVideoView) view.findViewById(R.id.video_view_bright_cove);
+        mIpTvLogoImage = (RelativeLayout) mActivity.findViewById(R.id.iptv_logo_image);
+        mFragmentsContainer = (RelativeLayout) mActivity.findViewById(R.id.category_channel_fragments_container);
+        mBrightCoveVideoViewContainerFragment = (RelativeLayout) mActivity.findViewById(R.id.fragment_three_live);
+        mSmallScreenVideoViewHeight = (int) mActivity.getResources().getDimension(R.dimen.video_view_small_screen_height);
+        return view;
+    }
+
+    public void getChannelLinkAndPlayChannel(String channelLink) {
+        if (LiveUtils.getPreviousUrlStreaming().equals(channelLink)) {
+            // Small screen - Large Screen Handling
+            if (LiveUtils.isUserPresentOnLargeScreen()) {
+                compressVideoView();
+            } else {
+                stretchVideoView();
+            }
+        } else {
+            playVideo(channelLink);
+        }
+    }
+
+    private void playVideo(final String link) {
+        LiveUtils.setPreviousUrlStreaming(link);
+        mVideoView.clear();
+//        mVideoView.setVideoURI(Uri.parse(link));
+        Video video = Video.createVideo(link);
+        mVideoView.add(video);
+        mVideoView.setMediaController((BrightcoveMediaController) null);
+        mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mVideoView.start();
+            }
+        });
+//        BrightcoveMediaController brightcoveMediaController = new BrightcoveMediaController(mVideoView);
+//        mVideoView.setMediaController(brightcoveMediaController);
+        BrightcoveMediaController.checkTvMode(mActivity.getApplicationContext());
+        EventEmitter eventEmitter = mVideoView.getEventEmitter();
+        eventEmitter.emit(EventType.ENTER_FULL_SCREEN);
+//        eventEmitter.emit(HIDE_MEDIA_CONTROLS);
+    }
+
+    public void compressVideoView() {
+        if (mIpTvLogoImage.getVisibility() == View.GONE) {
+            mIpTvLogoImage.setVisibility(View.VISIBLE);
+        }
+        if (mFragmentsContainer.getVisibility() == View.GONE) {
+            mFragmentsContainer.setVisibility(View.VISIBLE);
+        }
+        mBrightCoveVideoViewContainerFragment.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, mSmallScreenVideoViewHeight));
+        LiveUtils.setUserPresentOnLargeScreen(false);
+    }
+
+    private void stretchVideoView() {
+        if (mIpTvLogoImage.getVisibility() == View.VISIBLE) {
+            mIpTvLogoImage.setVisibility(View.GONE);
+        }
+        if (mFragmentsContainer.getVisibility() == View.VISIBLE) {
+            mFragmentsContainer.setVisibility(View.GONE);
+        }
+        mBrightCoveVideoViewContainerFragment.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+        LiveUtils.setUserPresentOnLargeScreen(true);
+    }
+}

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_channel"
+    tools:context=".Live.LiveMainActivity">
+
+    <RelativeLayout
+        android:id="@+id/category_videos_fragments_container"
+        android:layout_width="@dimen/fragment1_fragment2_container_width"
+        android:layout_height="match_parent"
+        android:background="@drawable/list">
+
+        <LinearLayout
+            android:id="@+id/live_tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <TextView
+                android:layout_width="@dimen/fragment_one_two_title_width"
+                android:layout_height="@dimen/fragment_one_two_title_height"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="@drawable/vods"
+                android:textColor="#fff" />
+
+            <TextView
+                android:layout_width="@dimen/fragment_one_two_title_width"
+                android:layout_height="@dimen/fragment_one_two_title_height"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="@drawable/vods_list"
+                android:textColor="#fff" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/fragment_one_vod"
+            android:layout_width="@dimen/fragment_one_two_width"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/live_tv_title"
+            android:background="@drawable/overlay_list" />
+
+        <RelativeLayout
+            android:id="@+id/fragment_two_vod"
+            android:layout_width="@dimen/fragment_one_two_width"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/live_tv_title"
+            android:layout_toEndOf="@+id/fragment_one_vod"
+            android:layout_toRightOf="@+id/fragment_one_vod" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@+id/category_videos_fragments_container"
+        android:layout_toRightOf="@+id/category_videos_fragments_container"
+        android:background="@android:color/holo_red_dark">
+
+        <RelativeLayout
+            android:id="@+id/fragment_three_vod"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/video_view_small_screen_height"/>
+
+        <RelativeLayout
+            android:id="@+id/iptv_logo_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_three_vod"
+            android:background="@drawable/player" />
+    </RelativeLayout>
+
+</RelativeLayout>
